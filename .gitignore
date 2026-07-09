@@ -7,6 +7,7 @@
 sankhya_config.php
 shopify_config.php
 api_keys_integradores.php
+payments_config.php
 
 # Arquivos temporários / ambiente
 *.log

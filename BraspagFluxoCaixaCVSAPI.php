@@ -5,9 +5,8 @@ header("Access-Control-Allow-Origin: *");
 
 require 'Braspag/BraspagAgilizaCashflowAPIService.php';
 
-$MERCANT_ID = 4127;
+$config_payments = include "payments_config.php";
 $integradores = include "api_keys_integradores.php";
-
 
 // get request method
 $method = $_SERVER['REQUEST_METHOD'];
@@ -49,7 +48,7 @@ if ($method == 'GET') {
     }
 
     try{
-        $braspagHelper = new BraspagAgilizaCashflowAPIService($MERCANT_ID);
+        $braspagHelper = new BraspagAgilizaCashflowAPIService($config_payments['braspag_agiliza']['merchant_id']);
         $cashFlow = $braspagHelper->GetCashFlow($_GET["dateFile"], $_GET["Acquirer"], $_GET["pageIndex"], $_GET["pageSize"]);
         if($cashFlow)
         {
@@ -65,11 +64,6 @@ if ($method == 'GET') {
         print($responseBodyAsString);
 
     }
-
-
-
-
-
 }
 
 if ($method == 'POST') {
@@ -81,4 +75,3 @@ if ($method == 'PUT') {
 if ($method == 'DELETE') {
 
 }
-

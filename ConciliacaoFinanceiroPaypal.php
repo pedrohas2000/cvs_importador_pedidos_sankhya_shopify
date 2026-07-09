@@ -29,11 +29,8 @@ if ($method == 'GET') {
     }
 
 
-$MERCANT_ID = 4127;
-
-$config_sankhya  = include "sankhya_config.php";
+$config_sankhya = include "sankhya_config.php";
 $sankhya = new SankhyaAPI($config_sankhya["host"]);
-
 
         try
         {

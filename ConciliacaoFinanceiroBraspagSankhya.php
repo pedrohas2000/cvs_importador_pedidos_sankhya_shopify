@@ -30,15 +30,13 @@ if ($method == 'GET') {
     }
 
 
-$MERCANT_ID = 4127;
-
-$config_sankhya  = include "sankhya_config.php";
+$config_payments = include "payments_config.php";
+$config_sankhya = include "sankhya_config.php";
 $sankhya = new SankhyaAPI($config_sankhya["host"]);
-
 
         try
         {
-            $braspagHelper = new BraspagAgilizaCashflowAPIService($MERCANT_ID);
+            $braspagHelper = new BraspagAgilizaCashflowAPIService($config_payments['braspag_agiliza']['merchant_id']);
             $total_pages = 1;
             $aquirer = 1;
             $page_size = 200;

@@ -5,59 +5,60 @@ use GuzzleHttp\Exception\ClientException;
 
 class PagBrasilAPIService
 {
-    const HOST = "https://connect.pagbrasil.com";
-    const TOKEN = "44c2934337952eaee53327e5d9d70d77";
-    const SECRET = "Secret CVS";
+    private static $config = null;
     private $http_client = null;
+
     public function __construct()
     {
         $this->http_client = new \GuzzleHttp\Client(array('cookies' => true,  'base_uri' => self::getHost()));
     }
 
-public static function getHost(){
-    return self::HOST;
-}
-public static function getHeader() {
-
-    return array(
-        'Content-Type' => 'application/x-www-form-urlencoded',
-    );
-
-}
-
-public function GetPaymentsByID($order_id){
-
-
-    try
+    private static function getConfig()
     {
-
-        $response = $this->http_client->post("/api/order/get",  [ 'headers' => self::getHeader(),
-            'form_params' => ['pbtoken' => self::TOKEN, 'order' => $order_id, 'secret' => self::SECRET]]);
-
-
-
-        if($response->getStatusCode() == 200)
-        {
-
-            $response = $response->getBody()->getContents();
-
-            $xml = simplexml_load_string($response, null, LIBXML_NOERROR |  LIBXML_ERR_NONE);
-            return $xml;
-
+        if (self::$config === null) {
+            $paymentsConfig = include dirname(__DIR__, 1) . '/payments_config.php';
+            self::$config = $paymentsConfig['pagbrasil'];
         }
-    } catch (ClientException $ex) {
-        $response = $ex->getResponse();
-        $statusCode = $response->getStatusCode();
-        if(in_array($statusCode, [404, 400, 412]))
-            return null;
-        else
-            throw $ex;
+
+        return self::$config;
     }
 
+    public static function getHost()
+    {
+        return self::getConfig()['host'];
+    }
 
+    public static function getHeader()
+    {
+        return array(
+            'Content-Type' => 'application/x-www-form-urlencoded',
+        );
+    }
 
-}
+    public function GetPaymentsByID($order_id)
+    {
+        $config = self::getConfig();
 
+        try
+        {
+            $response = $this->http_client->post("/api/order/get",  [ 'headers' => self::getHeader(),
+                'form_params' => ['pbtoken' => $config['token'], 'order' => $order_id, 'secret' => $config['secret']]]);
+
+            if($response->getStatusCode() == 200)
+            {
+                $response = $response->getBody()->getContents();
+                $xml = simplexml_load_string($response, null, LIBXML_NOERROR |  LIBXML_ERR_NONE);
+                return $xml;
+            }
+        } catch (ClientException $ex) {
+            $response = $ex->getResponse();
+            $statusCode = $response->getStatusCode();
+            if(in_array($statusCode, [404, 400, 412]))
+                return null;
+            else
+                throw $ex;
+        }
+    }
 
     const ORDER_STATUS = [
         "PC" => "Payment Completed",
@@ -67,7 +68,6 @@ public function GetPaymentsByID($order_id){
         "RP" => "Refund Processed",
         "CB" => "Chargeback",
     ];
-
 
     const PAYMENT_METHODS = [
         "C" => "Cartão de Crédito",
@@ -85,11 +85,4 @@ public function GetPaymentsByID($order_id){
         "H" => "Hipercard",
         "E" => "Elo",
     ];
-
-
-
 }
-
-
-
-
