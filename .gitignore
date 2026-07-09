@@ -1,0 +1,15 @@
+/vendor/
+/logs/
+/.idea/
+/.vscode/
+
+# Credenciais locais (usar os arquivos *.example.php como modelo)
+sankhya_config.php
+shopify_config.php
+api_keys_integradores.php
+
+# Arquivos temporários / ambiente
+*.log
+*.ofx
+.DS_Store
+Thumbs.db
